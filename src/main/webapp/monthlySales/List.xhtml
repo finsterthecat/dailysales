@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListMonthlySalesTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{bundle.ListMonthlySalesEmpty}" rendered="#{monthlySalesController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{monthlySalesController.items.rowCount > 0}">
+                    <h:outputText value="#{monthlySalesController.pagination.pageFirstItem + 1}..#{monthlySalesController.pagination.pageLastItem + 1}/#{monthlySalesController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{monthlySalesController.previous}" value="#{bundle.Previous} #{monthlySalesController.pagination.pageSize}" rendered="#{monthlySalesController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{monthlySalesController.next}" value="#{bundle.Next} #{monthlySalesController.pagination.pageSize}" rendered="#{monthlySalesController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{monthlySalesController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListMonthlySalesTitle_id}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListMonthlySalesTitle_salesAmt}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.salesAmt}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListMonthlySalesTitle_costAmt}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.costAmt}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListMonthlySalesTitle_store}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.store.name}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{monthlySalesController.prepareView}" value="#{bundle.ListMonthlySalesViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{monthlySalesController.prepareEdit}" value="#{bundle.ListMonthlySalesEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{monthlySalesController.destroy}" value="#{bundle.ListMonthlySalesDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{monthlySalesController.prepareCreate}" value="#{bundle.ListMonthlySalesCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ListMonthlySalesIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
