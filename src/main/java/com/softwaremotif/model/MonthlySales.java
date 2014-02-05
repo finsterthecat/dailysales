@@ -33,27 +33,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "MONTHLY_SALES")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "MonthlySales.findAll", query = "SELECT m FROM MonthlySales m"),
+    @NamedQuery(name = "MonthlySales.findAll", query = "SELECT m FROM MonthlySales m order by m.id desc"),
     @NamedQuery(name = "MonthlySales.findById", query = "SELECT m FROM MonthlySales m WHERE m.id = :id"),
-    @NamedQuery(name = "MonthlySales.findByStore", query = "SELECT m FROM MonthlySales m WHERE m.store.id = :id"),
+    @NamedQuery(name = "MonthlySales.findByStore", query = "SELECT m FROM MonthlySales m WHERE m.store.id = :id order by m.id desc"),
     @NamedQuery(name = "MonthlySales.findBySalesAmt", query = "SELECT m FROM MonthlySales m WHERE m.salesAmt = :salesAmt"),
     @NamedQuery(name = "MonthlySales.findByCostAmt", query = "SELECT m FROM MonthlySales m WHERE m.costAmt = :costAmt")})
 public class MonthlySales implements Serializable {
     private static final long serialVersionUID = 1L;
+    
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SEQ_MONTHLY_SALES")
     @SequenceGenerator(name="SEQ_MONTHLY_SALES", sequenceName="SEQ_MONTHLY_SALES", allocationSize=1)
     private Long id;
+    
     @Max(value=1000000) @Min(value=0) 
     @Basic(optional = false)
     @NotNull
     @Column(name = "SALES_AMT")
     private BigDecimal salesAmt;
+    
     @Max(value=1000000) @Min(value=0) 
     @Basic(optional = false)
     @NotNull
     @Column(name = "COST_AMT")
     private BigDecimal costAmt;
+    
     @JoinColumn(name = "STORE_ID", referencedColumnName = "ID")
     @ManyToOne(optional = false)
     private Store store;

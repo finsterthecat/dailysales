@@ -5,170 +5,193 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
 
-<f:view contentType="text/html">
-    <h:head>
-        <f:facet name="first">
-            <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
-            <title>Daily Sales</title>
-        </f:facet>
-    </h:head>
+    <f:view contentType="text/html">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <title>Daily Sales</title>
+            </f:facet>
+            <style>
+                .ui-widget, .ui-widget .ui-widget {
+                    font-size: 100% !important;
+                }
+            </style>
+        </h:head>
 
-    <h:body>
+        <h:body>
 
-        <p:layout fullPage="true">
+            <p:layout fullPage="true">
 
-            <p:layoutUnit position="north" size="110" resizable="true" closable="true" collapsible="true">
-                <h1>Daily Sales</h1>
-            </p:layoutUnit>
+                <p:layoutUnit position="north" size="110" resizable="true" closable="true" collapsible="true">
+                    <h1>Daily Sales</h1>
+                </p:layoutUnit>
 
-            <p:layoutUnit position="south" size="40" closable="true" collapsible="true">
-                &copy; Brouwer Systems Inc
-            </p:layoutUnit>
+                <p:layoutUnit position="south" size="40" closable="true" collapsible="true">
+                    &copy; Brouwer Systems Inc
+                </p:layoutUnit>
 
-            <p:layoutUnit position="center">
-                <f:view>
-                    <h:form id="mallform">  
-                        <p:growl id="growl" showDetail="true"/>
-                             <p:breadCrumb>
-                                <p:menuitem value="Malls" process="@this" action="#{mallBean.navHome}"
-                                            update=":mallform:mallPanel :mallform:storePanel :mallform:salesPanel" />
+                <p:layoutUnit position="center">
+                    <f:view>
+                        <h:form id="mallform">
+                            <!-- 10 min timeout -->
+                            <p:idleMonitor timeout="600000"   
+                                           onidle="idleDialog2.show()" onactive="idleDialog2.hide()"/>  
+
+                            <p:dialog header="Session timed-out" resizable="false"  
+                                      widgetVar="idleDialog2" modal="true">  
+                                <h:outputText value="Say goodbye" />  
+                                <p:ajax event="close" listener="#{mallBean.navHome}"
+                                        update=":mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:salesDialog"  />  
+                            </p:dialog>
+                            
+                            <p:growl id="growl" showDetail="false"/>
+
+                            <p:breadCrumb id="crumbs" model="#{mallBean.crumbs}">
                             </p:breadCrumb>
-                       
-                        <p:panel id="mallPanel" widgetVar="mallpanel"
-                                 closable="true" toggleable="true" visible="#{mallBean.mallsVisible}">
 
-                            <h1><h:outputText value="Malls"/></h1>
-                            <p:dataTable id="mallTable"
-                                         value="#{mallBean.findMalls()}"
-                                         var="mall" rowKey="#{mall.id}"
-                                         selection="#{mallBean.currentMall}" selectionMode="single"
-                                         rows="5" paginator="true">
-                                <p:ajax event="rowSelect" listener="#{mallBean.onMallSelect}"
-                                            update=":mallform:mallPanel :mallform:storePanel :mallform:salesPanel"  />  
-                                <p:ajax event="rowUnselect" listener="#{mallBean.onMallUnselect}" 
-                                        update=":mallform:growl"/>  
+                            <p:panel id="mallPanel" widgetVar="mallpanel"
+                                     closable="true" toggleable="true" visible="#{mallBean.mallsVisible}">
 
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Name"/>
-                                    </f:facet>
-                                    <h:outputText value="#{mall.name}"/>
-                                </p:column>
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Store Count"/>
-                                    </f:facet>
-                                    <h:outputText value="#{mall.storeCollection.size()}"/>
-                                </p:column>
-                            </p:dataTable>
-                        </p:panel>
-                        
-                        <p:panel id="storePanel" widgetVar="outpanel"
-                                 closable="true" toggleable="true" visible="#{mallBean.storesVisible}">
+                                <h1><h:outputText value="Malls"/></h1>
+                                <p:dataTable id="mallTable"
+                                             value="#{mallBean.findMalls()}"
+                                             var="mall" rowKey="#{mall.id}"
+                                             selection="#{mallBean.currentMall}" selectionMode="single"
+                                             rows="5" paginator="true">
+                                    <p:ajax event="rowSelect" listener="#{mallBean.onMallSelect}"
+                                            update=":mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:salesDialog :mallform:crumbs"  />  
+                                    <p:ajax event="rowUnselect" listener="#{mallBean.onMallUnselect}" 
+                                            update=":mallform:growl"/>  
 
-                           <h1><h:outputText value="Stores"/></h1>
-                           <p:dataTable id="table"
-                                         value="#{mallBean.findStores()}"
-                                         var="store" rowKey="#{store.id}"
-                                         selection="#{mallBean.currentStore}" selectionMode="single"
-                                         rows="5" paginator="true">
-                                <p:ajax event="rowSelect" listener="#{mallBean.onStoreSelect}"   
-                                            update=":mallform:mallPanel :mallform:storePanel :mallform:salesPanel" />  
-                                <p:ajax event="rowUnselect" 
-                                        listener="#{mallBean.onStoreUnselect}" update=":mallform:growl"/>  
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Name"/>
+                                        </f:facet>
+                                        <h:outputText value="#{mall.name}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Store Count"/>
+                                        </f:facet>
+                                        <h:outputText value="#{mall.storeCollection.size()}"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panel>
 
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Name"/>
-                                    </f:facet>
-                                    <h:outputText value="#{store.name}"/>
-                                </p:column>
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Mall"/>
-                                    </f:facet>
-                                    <h:outputText value="#{store.mall.name}"/>
-                                </p:column>
-                            </p:dataTable>
-                        </p:panel>
-                        
-                        <p:panel id="salesPanel" widgetVar="salespanel"
-                                 closable="true" toggleable="true" visible="#{mallBean.salesVisible}">
+                            <p:panel id="storePanel" widgetVar="outpanel"
+                                     closable="true" toggleable="true" visible="#{mallBean.storesVisible}">
 
-                           <h1><h:outputText value="Sales"/></h1>
-                           <p:dataTable id="salestable"
-                                         value="#{mallBean.findMonthlySales()}"
-                                         var="sale" rowKey="#{sale.id}"
-                                         selection="#{mallBean.currentMonthlySales}" selectionMode="single"
-                                         rows="5" paginator="true">
-                                <p:ajax event="rowSelect" listener="#{mallBean.onMonthlySalesSelect}"   
+                                <h1><h:outputText value="#{mallBean.currentMall.name} Stores"/></h1>
+                                <p:dataTable id="table"
+                                             value="#{mallBean.findStores()}"
+                                             var="store" rowKey="#{store.id}"
+                                             selection="#{mallBean.currentStore}" selectionMode="single"
+                                             rows="5" paginator="true">
+                                    <p:ajax event="rowSelect" listener="#{mallBean.onStoreSelect}"   
+                                            update=":mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:salesDialog :mallform:crumbs" />  
+                                    <p:ajax event="rowUnselect" 
+                                            listener="#{mallBean.onStoreUnselect}" update=":mallform:growl"/>  
+
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Name"/>
+                                        </f:facet>
+                                        <h:outputText value="#{store.name}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Sales Entry Count"/>
+                                        </f:facet>
+                                        <h:outputText value="#{store.salesCount}"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panel>
+
+                            <p:panel id="salesPanel" widgetVar="salespanel"
+                                     closable="true" toggleable="true" visible="#{mallBean.salesVisible}">
+
+                                <h1><h:outputText value="#{mallBean.currentStore.name} sales"/></h1>
+                                <p:dataTable id="salestable"
+                                             value="#{mallBean.findMonthlySales()}"
+                                             var="sale" rowKey="#{sale.id}"
+                                             sortBy="#{sale.id}" sortOrder="descending"
+                                             selection="#{mallBean.currentMonthlySales}" selectionMode="single"
+                                             rows="5" paginator="true">
+                                    <p:ajax event="rowSelect" listener="#{mallBean.onMonthlySalesSelect}"   
                                             update=":mallform:mallPanel :mallform:storePanel" />  
-                                <p:ajax event="rowUnselect" 
-                                        listener="#{mallBean.onMonthlySalesUnselect}" update=":mallform:growl"/>  
+                                    <p:ajax event="rowUnselect" 
+                                            listener="#{mallBean.onMonthlySalesUnselect}" update=":mallform:growl"/>  
 
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Name"/>
-                                    </f:facet>
-                                    <h:outputText value="#{sale.store.name}"/>
-                                </p:column>
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Cost"/>
-                                    </f:facet>
-                                    <h:outputText value="#{sale.costAmt}"/>
-                                </p:column>
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Sales"/>
-                                    </f:facet>
-                                    <h:outputText value="#{sale.salesAmt}"/>
-                                </p:column>
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Actions"/>
-                                    </f:facet>
-                                    <p:commandButton value="Delete" id="deleteSale"
-                                                     actionListener="#{mallBean.removeMonthlySales(sale)}" process="@this"
-                                                     update=":mallform:salesPanel" />
-                                </p:column>
-                            </p:dataTable>
-                            <p:commandLink value="New Sale" id="newSale" process="@this" oncomplete="salesDialog.show()" actionListener="#{mallBean.prepareNewMonthlySale}" update="salesDialog"/>
-                        </p:panel>
-                        
-                        <p:dialog id="salesDialog" header="New Sales Entry" widgetVar="salesDialog" resizable="false"  
-                                    showEffect="fade" hideEffect="explode">  
-                            <h1><h:outputText value="Create"/></h1>
-                            <p:messages id="msgs" />
-                            <p:panelGrid columns="3">
-                                <p:outputLabel value="SalesAmt:" for="salesAmt" />
-                                <p:inputText id="salesAmt" value="#{mallBean.currentMonthlySales.salesAmt}"
-                                             title="SalesAmt" required="true"
-                                             requiredMessage="The SalesAmt field is required."/>
-                                <p:message for="salesAmt" display="icon" />
-                                <p:outputLabel value="CostAmt:" for="costAmt" />
-                                <p:inputText id="costAmt" value="#{mallBean.currentMonthlySales.costAmt}"
-                                             title="CostAmt" required="true"
-                                             requiredMessage="The CostAmt field is required."/>
-                                <p:message for="costAmt" display="icon"/>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Cost"/>
+                                        </f:facet>
+                                        <h:outputText value="#{sale.costAmt}">
+                                            <f:convertNumber pattern="#0.00" />
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Sales"/>
+                                        </f:facet>
+                                        <h:outputText value="#{sale.salesAmt}">
+                                            <f:convertNumber pattern="#0.00" />
+                                        </h:outputText>
+                                            
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Actions"/>
+                                        </f:facet>
+                                        <p:commandButton title="Delete" id="deleteSale" icon="ui-icon ui-icon-trash"
+                                                         actionListener="#{mallBean.removeMonthlySales(sale)}" process="@this"
+                                                         update=":mallform:salesPanel" />
+                                    </p:column>
+                                </p:dataTable>
+                                <p:commandLink value="New Sale" id="newSale" process="@this"
+                                               actionListener="#{mallBean.prepareNewMonthlySale}" update="salesPanel :mallform:salesDialog :mallform:crumbs"/>
+                            </p:panel>
+
+                            <p:panel id="salesDialog" header="New Sales Entry" widgetVar="salesDialog" visible="#{mallBean.salesDialogVisible}">  
+                                <p:messages id="msgs" />
+                                <p>Enter sales for #{mallBean.currentStore.name} in #{mallBean.currentMall.name}:</p>
+                                <p:panelGrid columns="3">
+                                    <p:outputLabel value="Cost:" for="costAmt" />
+                                    <p:inputText id="costAmt" value="#{mallBean.currentMonthlySales.costAmt}"
+                                                 title="CostAmt" required="true"
+                                                 requiredMessage="Cost is a required field">
+                                        <f:convertNumber pattern="#0.00" />
+                                    </p:inputText>
+                                    <p:message for="costAmt" display="icon"/>
+                                    <p:outputLabel value="Sales:" for="salesAmt" />
+                                    <p:inputText id="salesAmt" value="#{mallBean.currentMonthlySales.salesAmt}"
+                                                 title="SalesAmt" required="true"
+                                                 requiredMessage="Sales is a required field">
+                                        <f:convertNumber pattern="#0.00" />
+                                    </p:inputText>
+     
+                                    <p:message for="salesAmt" display="icon" />
+                                </p:panelGrid>
                                 <p:commandButton value="Create"
                                                  actionListener="#{mallBean.createMonthlySales}"
                                                  process="@parent"
-                                                 update=":mallform:salesPanel " />
-                            </p:panelGrid>
-                        </p:dialog>  
+                                                 update="salesDialog :mallform:salesPanel" />
+                                <p:commandButton value="Cancel"
+                                                 actionListener="#{mallBean.cancelCreate}"
+                                                 process="@parent" immediate="true"
+                                                 update="salesDialog :mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:growl :mallform:crumbs" />
+                            </p:panel>  
 
-                        
-                    </h:form>
-                </f:view>
+                        </h:form>
+                    </f:view>
 
-            </p:layoutUnit>
+                </p:layoutUnit>
 
-        </p:layout>
+            </p:layout>
 
-    </h:body>
+        </h:body>
 
-</f:view>
+    </f:view>
 
 </html>
 

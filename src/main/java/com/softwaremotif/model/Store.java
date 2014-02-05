@@ -29,6 +29,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.eclipse.persistence.annotations.BatchFetch;
+import org.eclipse.persistence.annotations.BatchFetchType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,8 +43,10 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @Access(AccessType.FIELD)
 @NamedQueries({
-    @NamedQuery(name = "Store.findAll", query = "SELECT s FROM Store s"),
-    @NamedQuery(name = "Store.findByMall", query = "SELECT s FROM Store s where s.mall.id = :id"),
+    @NamedQuery(name = "Store.findAll",
+            query = "SELECT s FROM Store s join fetch s.monthlySales"),
+    @NamedQuery(name = "Store.findByMall",
+            query = "SELECT s FROM Store s where s.mall.id = :id"),
     @NamedQuery(name = "Store.findById", query = "SELECT s FROM Store s WHERE s.id = :id"),
     @NamedQuery(name = "Store.findByName", query = "SELECT s FROM Store s WHERE s.name = :name")})
 public class Store implements Serializable, Selectable {
@@ -54,12 +60,17 @@ public class Store implements Serializable, Selectable {
     @Size(min = 1, max = 50)
     @Column(name = "NAME")
     private String name;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "store")
-    private Collection<MonthlySales> monthlySalesCollection;
+    
+    @BatchFetch(BatchFetchType.JOIN)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "store", orphanRemoval = true)
+    private Collection<MonthlySales> monthlySales;
+    
     @JoinColumn(name = "MALL_ID", referencedColumnName = "ID")
     @ManyToOne(optional = false)
     private Mall mall;
 
+    private static final Logger LOG = LoggerFactory.getLogger(Store.class);
+    
     public Store() {
     }
 
@@ -90,11 +101,11 @@ public class Store implements Serializable, Selectable {
 
     @XmlTransient
     public Collection<MonthlySales> getMonthlySales() {
-        return monthlySalesCollection;
+        return monthlySales;
     }
 
-    public void setMonthlySales(Collection<MonthlySales> monthlySalesCollection) {
-        this.monthlySalesCollection = monthlySalesCollection;
+    public void setMonthlySales(Collection<MonthlySales> monthlySales) {
+        this.monthlySales = monthlySales;
     }
 
     public Mall getMall() {
@@ -135,4 +146,12 @@ public class Store implements Serializable, Selectable {
         return new SelectItem(this, name);
     }
     
+    public int getSalesCount() {
+        return this.monthlySales.size();
+    }
+    
+    public void addMonthlySale(MonthlySales monthlySales) {
+        monthlySales.setStore(this);
+        this.getMonthlySales().add(monthlySales);
+    }
 }

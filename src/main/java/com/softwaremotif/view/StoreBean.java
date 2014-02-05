@@ -9,12 +9,10 @@ package com.softwaremotif.view;
 import com.softwaremotif.control.StoreFacade;
 import com.softwaremotif.model.Store;
 import java.io.Serializable;
-import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
@@ -28,15 +26,10 @@ import org.primefaces.event.UnselectEvent;
 public class StoreBean implements Serializable {
     @EJB
     StoreFacade storeFacade;
-    
-    @Inject
-    MallBean mallBean;
+
     
     Store current = new Store();
     
-    public List<Store> findAll() {
-        return storeFacade.findByMall(mallBean.getCurrentMall());
-    }
     
     public Store find(int id) {
         current = storeFacade.find(id);
@@ -85,6 +78,6 @@ public class StoreBean implements Serializable {
     }
     
     public void onRowUnselect(UnselectEvent event) {
-        showMessage(((Store) event.getObject()).getName(), "Store Selected");
+        showMessage(((Store) event.getObject()).getName(), "Store Unselected");
     }
 }

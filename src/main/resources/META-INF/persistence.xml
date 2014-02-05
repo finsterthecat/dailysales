@@ -9,6 +9,8 @@
     <class>com.softwaremotif.model.MonthlySales</class>
     <class>com.softwaremotif.model.Store</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
-    <properties/>
+    <properties>
+        <property name="eclipselink.logging.level" value="FINE"/>
+    </properties>
   </persistence-unit>
 </persistence>

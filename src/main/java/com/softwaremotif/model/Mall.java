@@ -9,17 +9,17 @@ package com.softwaremotif.model;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.faces.model.SelectItem;
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -38,11 +38,10 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Mall implements Serializable, Selectable {
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "ID")
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SEQ_MALL")
+    @SequenceGenerator(name="SEQ_MALL", sequenceName="SEQ_MALL", allocationSize=1)
     private Long id;
-    @Size(max = 50)
+    @Size(min = 1, max = 50)
     @Column(name = "NAME")
     private String name;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mall")
@@ -106,7 +105,6 @@ public class Mall implements Serializable, Selectable {
     }
 
     @Override
-    @Transient
     public SelectItem getSelectItem() {
         return new SelectItem(this, name);
     }

@@ -15,12 +15,18 @@ import com.softwaremotif.model.Store;
 import java.io.Serializable;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.validation.Valid;
+import org.primefaces.component.menuitem.MenuItem;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
+import org.primefaces.model.DefaultMenuModel;
+import org.primefaces.model.MenuModel;
 
 /**
  *
@@ -36,12 +42,45 @@ public class MallBean implements Serializable {
     @EJB
     MonthlySalesFacade monthlySalesFacade;
     
-    private Mall currentMall = null;
+    @Valid
+    private Mall currentMall = new Mall();
+    @Valid
     private Store currentStore = null;
+    @Valid
     private MonthlySales currentMonthlySales;
     
-    enum SalesView {
-        MALLS, STORES, SALES, SALESDIALOG;
+    private MenuModel crumbs;
+    
+    public enum SalesView {
+        MALLS(0), STORES(1), SALES(2), SALESDIALOG(3);
+        
+        private int card;
+        
+        private SalesView(int card) {
+            this.card = card;
+        }
+        
+        public int getCard() {
+            return this.card;
+        }
+        
+        public static SalesView forCard(int card) {
+            for(SalesView sv: SalesView.values()) {
+                if (sv.card == card) {
+                    return sv;
+                }
+            }
+            return MALLS;
+        }
+        
+        public static SalesView forName(String name) {
+            for(SalesView sv: SalesView.values()) {
+                if (sv.toString().equals(name)) {
+                    return sv;
+                }
+            }
+            return MALLS;
+        }
     };
     
     SalesView currentView = SalesView.MALLS;
@@ -76,10 +115,17 @@ public class MallBean implements Serializable {
         mallFacade.remove(mall);
     }
     
-    public void createMall(Mall mall) {
-        showMessage(mall.getName(), "Mall Created");
+    public void createMall() {
+        Mall mall = currentMall;
         mall.setId(null);
-        mallFacade.create(mall);
+        try {
+            mallFacade.create(mall);            
+        }
+        catch (RuntimeException e) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "dberror", "omg " + mall.getName() + " already exists");
+            return;
+        }
+        showMessage(mall.getName(), "Mall >" + mall.getName() + "< created");
     }
     
     public void updateMall(Mall mall) {
@@ -87,9 +133,13 @@ public class MallBean implements Serializable {
         mallFacade.edit(mall);
     }
     
-    private void showMessage(String name, String text) {
-        FacesMessage msg = new FacesMessage(text, name);
+    private void showMessage(FacesMessage.Severity severity, String name, String text) {
+        FacesMessage msg = new FacesMessage(severity, name, text);
         FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+    
+    private void showMessage(String name, String text) {
+        showMessage(FacesMessage.SEVERITY_INFO, name, text);
     }
     
     public List<Store> findStores() {
@@ -153,7 +203,6 @@ public class MallBean implements Serializable {
 
     public void onMonthlySalesSelect(SelectEvent event) {
         showMessage(((MonthlySales) event.getObject()).getId().toString(), "Sales Selected");
-        currentView = SalesView.SALESDIALOG;
     }
     
     public void onMonthlySalesUnselect(UnselectEvent event) {
@@ -162,6 +211,58 @@ public class MallBean implements Serializable {
     
     public void navHome() {
         currentView = SalesView.MALLS;
+    }
+
+    public void nav(String view) {
+        currentView = SalesView.forName(view);
+    }
+    
+    public MenuModel getCrumbs() {
+        FacesContext facesCtx = FacesContext.getCurrentInstance();
+        ELContext elCtx = facesCtx.getELContext();
+        ExpressionFactory expFact = facesCtx.getApplication().getExpressionFactory();
+
+        crumbs = new DefaultMenuModel();
+        
+        MenuItem item = new MenuItem();
+        item.setValue("Malls");
+        item.setActionExpression(expFact.createMethodExpression(elCtx,
+                "#{mallBean.navHome}",
+                null,
+                new Class[0]));
+        item.setUpdate(":mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:salesDialog :mallform:crumbs");
+        item.setProcess("@this");
+        crumbs.addMenuItem(item);
+        
+        if (currentView.card > SalesView.MALLS.getCard()) {
+           item = new MenuItem();
+           item.setValue("Mall: " + currentMall.getName());
+           item.setActionExpression(expFact.createMethodExpression(elCtx,
+                   "#{mallBean.nav('STORES')}",
+                   null,
+                   new Class[]{Integer.class}));
+           item.setProcess("@this");
+           if (currentView == SalesView.STORES) {
+               item.setDisabled(true);
+           }
+           item.setUpdate(":mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:table :mallform:salesDialog :mallform:crumbs");
+           crumbs.addMenuItem(item);
+        }
+        if (currentView.card > SalesView.STORES.getCard()) {
+           item = new MenuItem();
+           item.setValue("Store: " + currentStore.getName());
+           item.setActionExpression(expFact.createMethodExpression(elCtx,
+                   "#{mallBean.nav('SALES')}",
+                   null,
+                   new Class[]{Integer.class}));
+           item.setProcess("@this");
+           if (currentView == SalesView.SALES) {
+               item.setDisabled(true);
+           }
+           item.setUpdate(":mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:salesDialog :mallform:crumbs");
+           crumbs.addMenuItem(item);
+        }
+        return crumbs;
     }
     
     public boolean isMallsVisible() {
@@ -173,7 +274,7 @@ public class MallBean implements Serializable {
     }
     
     public boolean isSalesVisible() {
-        return currentView == SalesView.SALES || currentView == SalesView.SALESDIALOG;
+        return currentView == SalesView.SALES;
     }
     
     public boolean isSalesDialogVisible() {
@@ -190,6 +291,7 @@ public class MallBean implements Serializable {
     }
     
     public MonthlySales prepareNewMonthlySale() {
+        currentView = SalesView.SALESDIALOG;
         currentMonthlySales = new MonthlySales();
         currentMonthlySales.setStore(currentStore);
         return currentMonthlySales;
@@ -208,21 +310,31 @@ public class MallBean implements Serializable {
     
     public void removeMonthlySales(MonthlySales monthlySale) {
         showMessage(monthlySale.getId().toString(), "MonthlySales Deleted");
-        monthlySalesFacade.remove(monthlySale);
+        currentStore.getMonthlySales().remove(monthlySale);
+        storeFacade.edit(currentStore);
+    }
+    
+    public void cancelCreate() {
+        currentView = SalesView.SALES;
     }
     
     public void createMonthlySales() {
-        //showMessage(monthlySale.getId().toString(), "MonthlySales Created");
         currentMonthlySales.setId(null);
-        currentMonthlySales.setStore(currentStore);
-        monthlySalesFacade.create(currentMonthlySales);
+        currentStore.addMonthlySale(currentMonthlySales);
+        try {
+            storeFacade.edit(currentStore);
+        }
+        catch (RuntimeException e) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "dberror", "something brokee");
+            return;
+        }
+        showMessage("New Sales", " New Sales for " + currentStore.getName() + " at " + currentMall.getName());
+        currentView = SalesView.SALES;
     }
     
     public void updateMonthlySales(MonthlySales mall) {
         showMessage(mall.getId().toString(), "MonthlySales Updated");
         monthlySalesFacade.edit(mall);
     }
-    
-
 
 }
