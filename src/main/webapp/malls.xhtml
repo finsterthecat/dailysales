@@ -136,7 +136,7 @@
                                 <p:dataTable id="salestable"
                                              value="#{mallBean.findMonthlySales()}"
                                              var="sale" rowKey="#{sale.id}"
-                                             sortBy="#{sale.id}" sortOrder="descending"
+                                             sortBy="#{sale.salesDate}" sortOrder="ascending"
                                              selection="#{mallBean.currentMonthlySales}" selectionMode="single"
                                              rows="5" paginator="true">
                                     <p:ajax event="rowSelect" listener="#{mallBean.onMonthlySalesSelect}"   
@@ -144,6 +144,14 @@
                                     <p:ajax event="rowUnselect" 
                                             listener="#{mallBean.onMonthlySalesUnselect}" update=":mallform:growl"/>  
 
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Date"/>
+                                        </f:facet>
+                                        <h:outputText value="#{sale.salesDate}">
+                                            <f:convertDateTime pattern="dd-MMM-yyyy" />
+                                        </h:outputText>
+                                    </p:column>
                                     <p:column>
                                         <f:facet name="header">
                                             <h:outputText value="Cost"/>
@@ -179,6 +187,11 @@
                                 <p:messages id="msgs" />
                                 <p>Enter sales for #{mallBean.currentStore.name} in #{mallBean.currentMall.name}:</p>
                                 <p:panelGrid columns="3">
+                                    <p:outputLabel value="Sales Date:" for="salesDate" />
+                                    <p:calendar id="salesDate" value="#{mallBean.currentMonthlySales.salesDate}"
+                                                 title="SalesDate" required="true"
+                                                 requiredMessage="Sales Date is a required field" />
+                                    <p:message for="salesDate" display="icon"/>
                                     <p:outputLabel value="Cost:" for="costAmt" />
                                     <p:inputText id="costAmt" value="#{mallBean.currentMonthlySales.costAmt}"
                                                  title="CostAmt" required="true"

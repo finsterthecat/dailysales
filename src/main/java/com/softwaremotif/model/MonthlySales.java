@@ -8,6 +8,7 @@ package com.softwaremotif.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,6 +21,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -35,16 +38,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "MonthlySales.findAll", query = "SELECT m FROM MonthlySales m order by m.id desc"),
     @NamedQuery(name = "MonthlySales.findById", query = "SELECT m FROM MonthlySales m WHERE m.id = :id"),
-    @NamedQuery(name = "MonthlySales.findByStore", query = "SELECT m FROM MonthlySales m WHERE m.store.id = :id order by m.id desc"),
+    @NamedQuery(name = "MonthlySales.findByStore", query = "SELECT m FROM MonthlySales m WHERE m.store.id = :id order by m.salesDate desc"),
     @NamedQuery(name = "MonthlySales.findBySalesAmt", query = "SELECT m FROM MonthlySales m WHERE m.salesAmt = :salesAmt"),
     @NamedQuery(name = "MonthlySales.findByCostAmt", query = "SELECT m FROM MonthlySales m WHERE m.costAmt = :costAmt")})
 public class MonthlySales implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+     
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SEQ_MONTHLY_SALES")
     @SequenceGenerator(name="SEQ_MONTHLY_SALES", sequenceName="SEQ_MONTHLY_SALES", allocationSize=1)
     private Long id;
+
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "SALES_DATE")
+    @Temporal(TemporalType.DATE)
+    private Date salesDate;
     
     @Max(value=1000000) @Min(value=0) 
     @Basic(optional = false)
@@ -69,6 +78,11 @@ public class MonthlySales implements Serializable {
         this.id = id;
     }
 
+    public MonthlySales(Long id, Date salesDate) {
+        this.id = id;
+        this.salesDate = salesDate;
+    }
+
     public MonthlySales(Long id, BigDecimal salesAmt, BigDecimal costAmt) {
         this.id = id;
         this.salesAmt = salesAmt;
@@ -81,6 +95,14 @@ public class MonthlySales implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Date getSalesDate() {
+        return salesDate;
+    }
+
+    public void setSalesDate(Date salesDate) {
+        this.salesDate = salesDate;
     }
 
     public BigDecimal getSalesAmt() {
@@ -131,5 +153,4 @@ public class MonthlySales implements Serializable {
     public String toString() {
         return "com.datascape.model.MonthlySales[ id=" + id + " ]";
     }
-    
 }
