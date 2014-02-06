@@ -73,7 +73,7 @@
                                         <f:facet name="header">
                                             <h:outputText value="Store Count"/>
                                         </f:facet>
-                                        <h:outputText value="#{mall.storeCollection.size()}"/>
+                                        <h:outputText value="#{mall.stores.size()}"/>
                                     </p:column>
                                      <p:column>
                                         <f:facet name="header">
@@ -228,7 +228,7 @@
 
                            <p:panel id="storeDialog" header="New Store" widgetVar="storeDialog" visible="#{mallBean.storeDialogVisible}">  
                                 <p:messages id="storemsgs" />
-                                <p>Enter new mall info:</p>
+                                <p>Enter new store info:</p>
                                 <p:panelGrid columns="3">
                                     <p:outputLabel value="Name:" for="storeName" />
                                     <p:inputText id="storeName" value="#{mallBean.currentStore.name}"

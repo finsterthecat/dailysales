@@ -174,10 +174,16 @@ public class MallBean implements Serializable {
         }
         return currentStore;
     }
-    
+
     public void removeStore(Store store) {
+        storeFacade.removeStore(store);
+        currentStore = null;
         showMessage(store.getName() + " Deleted", store.getName() + " Deleted");
-        currentMall.getStoreCollection().remove(store);
+    }
+
+    public void removeStore3(Store store) {
+        showMessage(store.getName() + " Deleted", store.getName() + " Deleted");
+        currentMall.getStores().remove(store);
         mallFacade.edit(currentMall);
     }
     
@@ -189,12 +195,12 @@ public class MallBean implements Serializable {
     public void createStore() {
         Store store = currentStore;
         store.setId(null);
-        currentMall.addStore(store);
+        //currentMall.addStore(store);
         try {
-            mallFacade.edit(currentMall);
+            storeFacade.addStore(currentMall, store);
         }
         catch (RuntimeException e) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "dberror", "omg " + store.getName() + " already exists");
+            showMessage(FacesMessage.SEVERITY_ERROR, "omg " + store.getName() + " already exists", "omg " + store.getName() + " already exists");
             return;
         }
         showMessage(store.getName() + " created", store.getName());
@@ -340,8 +346,7 @@ public class MallBean implements Serializable {
     }
     
     public void removeMonthlySales(MonthlySales monthlySale) {
-        currentStore.getMonthlySales().remove(monthlySale);
-        storeFacade.edit(currentStore);
+        monthlySalesFacade.removeSale(monthlySale);
         showMessage("Deleted a daily sales entry", "deleted");
     }
     
@@ -352,9 +357,8 @@ public class MallBean implements Serializable {
     
     public void createMonthlySales() {
         currentMonthlySales.setId(null);
-        currentStore.addMonthlySale(currentMonthlySales);
         try {
-            storeFacade.edit(currentStore);
+            monthlySalesFacade.addSale(currentStore, currentMonthlySales);
         }
         catch (RuntimeException e) {
             showMessage(FacesMessage.SEVERITY_ERROR, "dberror", "something brokee");

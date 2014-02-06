@@ -7,9 +7,13 @@
 package com.softwaremotif.control;
 
 import com.softwaremotif.model.Mall;
+import com.softwaremotif.model.Store;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -20,6 +24,8 @@ public class MallFacade extends AbstractFacade<Mall> {
     @PersistenceContext(unitName = "com.brouwer_datascape_war_1.0-SNAPSHOTPU")
     private EntityManager em;
 
+    private static final Logger LOG = LoggerFactory.getLogger(MallFacade.class);
+    
     @Override
     protected EntityManager getEntityManager() {
         return em;

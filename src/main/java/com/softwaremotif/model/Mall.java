@@ -45,7 +45,7 @@ public class Mall implements Serializable, Selectable {
     @Column(name = "NAME")
     private String name;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mall", orphanRemoval = true)
-    private Collection<Store> storeCollection;
+    private Collection<Store> stores;
 
     public Mall() {
     }
@@ -71,12 +71,12 @@ public class Mall implements Serializable, Selectable {
     }
 
     @XmlTransient
-    public Collection<Store> getStoreCollection() {
-        return storeCollection;
+    public Collection<Store> getStores() {
+        return stores;
     }
 
-    public void setStoreCollection(Collection<Store> storeCollection) {
-        this.storeCollection = storeCollection;
+    public void setStores(Collection<Store> stores) {
+        this.stores = stores;
     }
 
     @Override
@@ -110,7 +110,7 @@ public class Mall implements Serializable, Selectable {
     }
     
     public void addStore(Store store) {
-        this.getStoreCollection().add(store);
+        this.getStores().add(store);
         store.setMall(this);
     }
     
