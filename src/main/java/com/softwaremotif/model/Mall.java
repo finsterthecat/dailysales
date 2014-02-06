@@ -44,7 +44,7 @@ public class Mall implements Serializable, Selectable {
     @Size(min = 1, max = 50)
     @Column(name = "NAME")
     private String name;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mall")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mall", orphanRemoval = true)
     private Collection<Store> storeCollection;
 
     public Mall() {
@@ -107,6 +107,11 @@ public class Mall implements Serializable, Selectable {
     @Override
     public SelectItem getSelectItem() {
         return new SelectItem(this, name);
+    }
+    
+    public void addStore(Store store) {
+        this.getStoreCollection().add(store);
+        store.setMall(this);
     }
     
 }

@@ -52,7 +52,7 @@ public class MallBean implements Serializable {
     private MenuModel crumbs;
     
     public enum SalesView {
-        MALLS(0), STORES(1), SALES(2), SALESDIALOG(3);
+        MALLS(0), MALLDIALOG(1), STORES(2), STOREDIALOG(3), SALES(4), SALESDIALOG(5);
         
         private int card;
         
@@ -95,6 +95,7 @@ public class MallBean implements Serializable {
     }
     
     public Mall prepareNewMall() {
+        currentView = SalesView.MALLDIALOG;
         currentMall = new Mall();
         return currentMall;
     }
@@ -111,8 +112,13 @@ public class MallBean implements Serializable {
     }
     
     public void removeMall(Mall mall) {
-        showMessage(mall.getName(), "Mall Deleted");
+        showMessage(mall.getName() + " deleted", mall.getName() + " deleted");
         mallFacade.remove(mall);
+    }
+    
+    public void cancelCreateMall() {
+        showMessage("No changes made", "Cancelled");
+        currentView = SalesView.MALLS;
     }
     
     public void createMall() {
@@ -125,7 +131,8 @@ public class MallBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_ERROR, "dberror", "omg " + mall.getName() + " already exists");
             return;
         }
-        showMessage(mall.getName(), "Mall >" + mall.getName() + "< created");
+        showMessage(mall.getName() + " created", mall.getName());
+        currentView = SalesView.MALLS;
     }
     
     public void updateMall(Mall mall) {
@@ -152,10 +159,11 @@ public class MallBean implements Serializable {
     }
     
     public Store prepareNewStore() {
+        currentView = SalesView.STOREDIALOG;
         currentStore = new Store();
         return currentStore;
     }
-    
+   
     public void setCurrentStore(Store store) {
         currentStore = store;
     }
@@ -168,14 +176,29 @@ public class MallBean implements Serializable {
     }
     
     public void removeStore(Store store) {
-        showMessage(store.getName(), "Store Deleted");
-        storeFacade.remove(store);
+        showMessage(store.getName() + " Deleted", store.getName() + " Deleted");
+        currentMall.getStoreCollection().remove(store);
+        mallFacade.edit(currentMall);
     }
     
-    public void createStore(Store store) {
-        showMessage(store.getName(), "Store Created");
+    public void cancelCreateStore() {
+        showMessage("No changes made", "Cancelled");
+        currentView = SalesView.STORES;
+    }
+    
+    public void createStore() {
+        Store store = currentStore;
         store.setId(null);
-        storeFacade.create(store);
+        currentMall.addStore(store);
+        try {
+            mallFacade.edit(currentMall);
+        }
+        catch (RuntimeException e) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "dberror", "omg " + store.getName() + " already exists");
+            return;
+        }
+        showMessage(store.getName() + " created", store.getName());
+        currentView = SalesView.STORES;
     }
     
     public void updateStore(Store store) {
@@ -281,6 +304,14 @@ public class MallBean implements Serializable {
         return currentView == SalesView.SALESDIALOG;
     }
     
+    public boolean isMallDialogVisible() {
+        return currentView == SalesView.MALLDIALOG;
+    }
+    
+    public boolean isStoreDialogVisible() {
+        return currentView == SalesView.STOREDIALOG;
+    }
+    
     public List<MonthlySales> findMonthlySales() {
         return monthlySalesFacade.findByStore(currentStore);
     }
@@ -309,12 +340,13 @@ public class MallBean implements Serializable {
     }
     
     public void removeMonthlySales(MonthlySales monthlySale) {
-        showMessage(monthlySale.getId().toString(), "MonthlySales Deleted");
         currentStore.getMonthlySales().remove(monthlySale);
         storeFacade.edit(currentStore);
+        showMessage("Deleted a daily sales entry", "deleted");
     }
     
     public void cancelCreate() {
+        showMessage("No changes made", "Cancelled");
         currentView = SalesView.SALES;
     }
     
@@ -328,7 +360,7 @@ public class MallBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_ERROR, "dberror", "something brokee");
             return;
         }
-        showMessage("New Sales", " New Sales for " + currentStore.getName() + " at " + currentMall.getName());
+        showMessage(" New Sales for " + currentStore.getName() + " at " + currentMall.getName(), "New...");
         currentView = SalesView.SALES;
     }
     

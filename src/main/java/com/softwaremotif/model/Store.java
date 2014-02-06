@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
     @NamedQuery(name = "Store.findAll",
             query = "SELECT s FROM Store s join fetch s.monthlySales"),
     @NamedQuery(name = "Store.findByMall",
-            query = "SELECT s FROM Store s where s.mall.id = :id"),
+            query = "SELECT s FROM Store s WHERE s.mall.id = :id"),
     @NamedQuery(name = "Store.findById", query = "SELECT s FROM Store s WHERE s.id = :id"),
     @NamedQuery(name = "Store.findByName", query = "SELECT s FROM Store s WHERE s.name = :name")})
 public class Store implements Serializable, Selectable {

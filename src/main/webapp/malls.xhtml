@@ -13,7 +13,7 @@
             </f:facet>
             <style>
                 .ui-widget, .ui-widget .ui-widget {
-                    font-size: 100% !important;
+                    font-size: 90% !important;
                 }
             </style>
         </h:head>
@@ -59,7 +59,7 @@
                                              selection="#{mallBean.currentMall}" selectionMode="single"
                                              rows="5" paginator="true">
                                     <p:ajax event="rowSelect" listener="#{mallBean.onMallSelect}"
-                                            update=":mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:salesDialog :mallform:crumbs"  />  
+                                            update=":mallform:mallPanel :mallform:storePanel :mallform:growl"  />  
                                     <p:ajax event="rowUnselect" listener="#{mallBean.onMallUnselect}" 
                                             update=":mallform:growl"/>  
 
@@ -75,7 +75,18 @@
                                         </f:facet>
                                         <h:outputText value="#{mall.storeCollection.size()}"/>
                                     </p:column>
-                                </p:dataTable>
+                                     <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Actions"/>
+                                        </f:facet>
+                                        <p:commandButton title="Delete" id="deleteMall" icon="ui-icon ui-icon-trash"
+                                                         actionListener="#{mallBean.removeMall(mall)}" process="@this"
+                                                         update=":mallform:mallPanel :mallform:growl" />
+                                    </p:column>
+                               </p:dataTable>
+                               <p:commandLink value="New Mall" id="newMall" process="@this"
+                                               actionListener="#{mallBean.prepareNewMall}"
+                                               update="mallPanel :mallform:mallDialog :mallform:crumbs :mallform:growl"/>
                             </p:panel>
 
                             <p:panel id="storePanel" widgetVar="outpanel"
@@ -88,7 +99,7 @@
                                              selection="#{mallBean.currentStore}" selectionMode="single"
                                              rows="5" paginator="true">
                                     <p:ajax event="rowSelect" listener="#{mallBean.onStoreSelect}"   
-                                            update=":mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:salesDialog :mallform:crumbs" />  
+                                            update=":mallform:storePanel :mallform:salesPanel :mallform:crumbs :mallform:growl" />  
                                     <p:ajax event="rowUnselect" 
                                             listener="#{mallBean.onStoreUnselect}" update=":mallform:growl"/>  
 
@@ -104,7 +115,18 @@
                                         </f:facet>
                                         <h:outputText value="#{store.salesCount}"/>
                                     </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Actions"/>
+                                        </f:facet>
+                                        <p:commandButton title="Delete" id="deleteStore" icon="ui-icon ui-icon-trash"
+                                                         actionListener="#{mallBean.removeStore(store)}" process="@this"
+                                                         update=":mallform:storePanel :mallform:growl" />
+                                    </p:column>
                                 </p:dataTable>
+                                <p:commandLink value="New Store" id="newStore" process="@this"
+                                               actionListener="#{mallBean.prepareNewStore}"
+                                               update="storePanel :mallform:storeDialog :mallform:crumbs :mallform:growl"/>
                             </p:panel>
 
                             <p:panel id="salesPanel" widgetVar="salespanel"
@@ -118,7 +140,7 @@
                                              selection="#{mallBean.currentMonthlySales}" selectionMode="single"
                                              rows="5" paginator="true">
                                     <p:ajax event="rowSelect" listener="#{mallBean.onMonthlySalesSelect}"   
-                                            update=":mallform:mallPanel :mallform:storePanel" />  
+                                            update=":mallform:growl" />  
                                     <p:ajax event="rowUnselect" 
                                             listener="#{mallBean.onMonthlySalesUnselect}" update=":mallform:growl"/>  
 
@@ -145,11 +167,12 @@
                                         </f:facet>
                                         <p:commandButton title="Delete" id="deleteSale" icon="ui-icon ui-icon-trash"
                                                          actionListener="#{mallBean.removeMonthlySales(sale)}" process="@this"
-                                                         update=":mallform:salesPanel" />
+                                                         update=":mallform:salesPanel :mallform:growl" />
                                     </p:column>
                                 </p:dataTable>
                                 <p:commandLink value="New Sale" id="newSale" process="@this"
-                                               actionListener="#{mallBean.prepareNewMonthlySale}" update="salesPanel :mallform:salesDialog :mallform:crumbs"/>
+                                               actionListener="#{mallBean.prepareNewMonthlySale}"
+                                               update="salesPanel :mallform:salesDialog :mallform:crumbs :mallform:growl"/>
                             </p:panel>
 
                             <p:panel id="salesDialog" header="New Sales Entry" widgetVar="salesDialog" visible="#{mallBean.salesDialogVisible}">  
@@ -175,11 +198,53 @@
                                 <p:commandButton value="Create"
                                                  actionListener="#{mallBean.createMonthlySales}"
                                                  process="@parent"
-                                                 update="salesDialog :mallform:salesPanel" />
+                                                 update="salesDialog :mallform:salesPanel :mallform:growl :mallform:crumbs" />
                                 <p:commandButton value="Cancel"
                                                  actionListener="#{mallBean.cancelCreate}"
                                                  process="@parent" immediate="true"
                                                  update="salesDialog :mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:growl :mallform:crumbs" />
+                            </p:panel>  
+
+                            <p:panel id="mallDialog" header="New Mall" widgetVar="mallDialog" visible="#{mallBean.mallDialogVisible}">  
+                                <p:messages id="mallmsgs" />
+                                <p>Enter new mall info:</p>
+                                <p:panelGrid columns="3">
+                                    <p:outputLabel value="Name:" for="mallName" />
+                                    <p:inputText id="mallName" value="#{mallBean.currentMall.name}"
+                                                 title="Mall Name" required="true"
+                                                 requiredMessage="Name is a required field">
+                                    </p:inputText>
+                                    <p:message for="mallName" display="icon"/>
+                                </p:panelGrid>
+                                <p:commandButton value="Create"
+                                                 actionListener="#{mallBean.createMall}"
+                                                 process="@parent"
+                                                 update="mallDialog :mallform:mallPanel :mallform:growl :mallform:crumbs" />
+                                <p:commandButton value="Cancel"
+                                                 actionListener="#{mallBean.cancelCreateMall}"
+                                                 process="@parent" immediate="true"
+                                                 update="mallDialog :mallform:mallPanel :mallform:growl :mallform:crumbs" />
+                            </p:panel>  
+
+                           <p:panel id="storeDialog" header="New Store" widgetVar="storeDialog" visible="#{mallBean.storeDialogVisible}">  
+                                <p:messages id="storemsgs" />
+                                <p>Enter new mall info:</p>
+                                <p:panelGrid columns="3">
+                                    <p:outputLabel value="Name:" for="storeName" />
+                                    <p:inputText id="storeName" value="#{mallBean.currentStore.name}"
+                                                 title="Store Name" required="true"
+                                                 requiredMessage="Name is a required field">
+                                    </p:inputText>
+                                    <p:message for="storeName" display="icon"/>
+                                </p:panelGrid>
+                                <p:commandButton value="Create"
+                                                 actionListener="#{mallBean.createStore}"
+                                                 process="@parent"
+                                                 update="storeDialog :mallform:storePanel :mallform:growl :mallform:crumbs" />
+                                <p:commandButton value="Cancel"
+                                                 actionListener="#{mallBean.cancelCreateStore}"
+                                                 process="@parent" immediate="true"
+                                                 update="storeDialog :mallform:storePanel :mallform:growl :mallform:crumbs" />
                             </p:panel>  
 
                         </h:form>
