@@ -1,9 +1,9 @@
-package com.softwaremotif.view;
+package com.brouwersystems.view;
 
-import com.softwaremotif.model.Mall;
-import com.softwaremotif.view.util.JsfUtil;
-import com.softwaremotif.view.util.PaginationHelper;
-import com.softwaremotif.control.MallFacade;
+import com.brouwersystems.model.MonthlySales;
+import com.brouwersystems.view.util.JsfUtil;
+import com.brouwersystems.view.util.PaginationHelper;
+import com.brouwersystems.control.MonthlySalesFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -18,29 +18,29 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 
-@Named("mallController")
+@Named("monthlySalesController")
 @SessionScoped
-public class MallController implements Serializable {
+public class MonthlySalesController implements Serializable {
 
-    private Mall current;
+    private MonthlySales current;
     private DataModel items = null;
     @EJB
-    private com.softwaremotif.control.MallFacade ejbFacade;
+    private com.brouwersystems.control.MonthlySalesFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 
-    public MallController() {
+    public MonthlySalesController() {
     }
 
-    public Mall getSelected() {
+    public MonthlySales getSelected() {
         if (current == null) {
-            current = new Mall();
+            current = new MonthlySales();
             selectedItemIndex = -1;
         }
         return current;
     }
 
-    private MallFacade getFacade() {
+    private MonthlySalesFacade getFacade() {
         return ejbFacade;
     }
 
@@ -68,13 +68,13 @@ public class MallController implements Serializable {
     }
 
     public String prepareView() {
-        current = (Mall) getItems().getRowData();
+        current = (MonthlySales) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "View";
     }
 
     public String prepareCreate() {
-        current = new Mall();
+        current = new MonthlySales();
         selectedItemIndex = -1;
         return "Create";
     }
@@ -82,8 +82,8 @@ public class MallController implements Serializable {
     public String create() {
         try {
             getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("MallCreated"));
-            return prepareView();
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("MonthlySalesCreated"));
+            return prepareCreate();
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             return null;
@@ -91,7 +91,7 @@ public class MallController implements Serializable {
     }
 
     public String prepareEdit() {
-        current = (Mall) getItems().getRowData();
+        current = (MonthlySales) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "Edit";
     }
@@ -99,7 +99,7 @@ public class MallController implements Serializable {
     public String update() {
         try {
             getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("MallUpdated"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("MonthlySalesUpdated"));
             return "View";
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -108,7 +108,7 @@ public class MallController implements Serializable {
     }
 
     public String destroy() {
-        current = (Mall) getItems().getRowData();
+        current = (MonthlySales) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         performDestroy();
         recreatePagination();
@@ -132,7 +132,7 @@ public class MallController implements Serializable {
     private void performDestroy() {
         try {
             getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("MallDeleted"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("MonthlySalesDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
         }
@@ -180,29 +180,21 @@ public class MallController implements Serializable {
         return "List";
     }
 
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public Mall getMall(java.lang.Long id) {
+    public MonthlySales getMonthlySales(java.lang.Long id) {
         return ejbFacade.find(id);
     }
 
-    @FacesConverter(forClass = Mall.class)
-    public static class MallControllerConverter implements Converter {
+    @FacesConverter(forClass = MonthlySales.class)
+    public static class MonthlySalesControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            MallController controller = (MallController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "mallController");
-            return controller.getMall(getKey(value));
+            MonthlySalesController controller = (MonthlySalesController) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "monthlySalesController");
+            return controller.getMonthlySales(getKey(value));
         }
 
         java.lang.Long getKey(String value) {
@@ -222,11 +214,11 @@ public class MallController implements Serializable {
             if (object == null) {
                 return null;
             }
-            if (object instanceof Mall) {
-                Mall o = (Mall) object;
+            if (object instanceof MonthlySales) {
+                MonthlySales o = (MonthlySales) object;
                 return getStringKey(o.getId());
             } else {
-                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + Mall.class.getName());
+                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + MonthlySales.class.getName());
             }
         }
 

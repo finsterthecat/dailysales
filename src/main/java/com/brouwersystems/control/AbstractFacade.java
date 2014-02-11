@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package com.softwaremotif.control;
+package com.brouwersystems.control;
 
 import java.util.List;
 import javax.persistence.EntityManager;

@@ -4,14 +4,14 @@
  * and open the template in the editor.
  */
 
-package com.softwaremotif.view;
+package com.brouwersystems.view;
 
-import com.softwaremotif.control.MallFacade;
-import com.softwaremotif.control.MonthlySalesFacade;
-import com.softwaremotif.control.StoreFacade;
-import com.softwaremotif.model.Mall;
-import com.softwaremotif.model.MonthlySales;
-import com.softwaremotif.model.Store;
+import com.brouwersystems.control.MallFacade;
+import com.brouwersystems.control.MonthlySalesFacade;
+import com.brouwersystems.control.StoreFacade;
+import com.brouwersystems.model.Mall;
+import com.brouwersystems.model.MonthlySales;
+import com.brouwersystems.model.Store;
 import java.io.Serializable;
 import java.util.List;
 import javax.ejb.EJB;
@@ -181,12 +181,6 @@ public class MallBean implements Serializable {
         showMessage(store.getName() + " Deleted", store.getName() + " Deleted");
     }
 
-    public void removeStore3(Store store) {
-        showMessage(store.getName() + " Deleted", store.getName() + " Deleted");
-        currentMall.getStores().remove(store);
-        mallFacade.edit(currentMall);
-    }
-    
     public void cancelCreateStore() {
         showMessage("No changes made", "Cancelled");
         currentView = SalesView.STORES;
@@ -259,11 +253,11 @@ public class MallBean implements Serializable {
                 "#{mallBean.navHome}",
                 null,
                 new Class[0]));
-        item.setUpdate(":mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:salesDialog :mallform:crumbs");
+        item.setUpdate(":mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:salesDialog :mallform:mallDialog :mallform:storeDialog :mallform:crumbs");
         item.setProcess("@this");
         crumbs.addMenuItem(item);
         
-        if (currentView.card > SalesView.MALLS.getCard()) {
+        if (currentView.card > SalesView.MALLDIALOG.getCard()) {
            item = new MenuItem();
            item.setValue("Mall: " + currentMall.getName());
            item.setActionExpression(expFact.createMethodExpression(elCtx,
@@ -271,13 +265,13 @@ public class MallBean implements Serializable {
                    null,
                    new Class[]{Integer.class}));
            item.setProcess("@this");
-           if (currentView == SalesView.STORES) {
+           if (currentView.getCard() <= SalesView.STORES.getCard()) {
                item.setDisabled(true);
            }
-           item.setUpdate(":mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:table :mallform:salesDialog :mallform:crumbs");
+           item.setUpdate(":mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:table :mallform:mallDialog :mallform:storeDialog :mallform:salesDialog :mallform:crumbs");
            crumbs.addMenuItem(item);
         }
-        if (currentView.card > SalesView.STORES.getCard()) {
+        if (currentView.card > SalesView.STOREDIALOG.getCard()) {
            item = new MenuItem();
            item.setValue("Store: " + currentStore.getName());
            item.setActionExpression(expFact.createMethodExpression(elCtx,
@@ -288,7 +282,7 @@ public class MallBean implements Serializable {
            if (currentView == SalesView.SALES) {
                item.setDisabled(true);
            }
-           item.setUpdate(":mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:salesDialog :mallform:crumbs");
+           item.setUpdate(":mallform:mallPanel :mallform:storePanel :mallform:salesPanel :mallform:salesDialog  :mallform:storeDialog :mallform:crumbs");
            crumbs.addMenuItem(item);
         }
         return crumbs;

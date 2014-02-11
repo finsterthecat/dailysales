@@ -1,9 +1,9 @@
-package com.softwaremotif.view;
+package com.brouwersystems.view;
 
-import com.softwaremotif.model.Store;
-import com.softwaremotif.view.util.JsfUtil;
-import com.softwaremotif.view.util.PaginationHelper;
-import com.softwaremotif.control.StoreFacade;
+import com.brouwersystems.model.Mall;
+import com.brouwersystems.view.util.JsfUtil;
+import com.brouwersystems.view.util.PaginationHelper;
+import com.brouwersystems.control.MallFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -18,29 +18,29 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 
-@Named("storeController")
+@Named("mallController")
 @SessionScoped
-public class StoreController implements Serializable {
+public class MallController implements Serializable {
 
-    private Store current;
+    private Mall current;
     private DataModel items = null;
     @EJB
-    private com.softwaremotif.control.StoreFacade ejbFacade;
+    private com.brouwersystems.control.MallFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 
-    public StoreController() {
+    public MallController() {
     }
 
-    public Store getSelected() {
+    public Mall getSelected() {
         if (current == null) {
-            current = new Store();
+            current = new Mall();
             selectedItemIndex = -1;
         }
         return current;
     }
 
-    private StoreFacade getFacade() {
+    private MallFacade getFacade() {
         return ejbFacade;
     }
 
@@ -68,13 +68,13 @@ public class StoreController implements Serializable {
     }
 
     public String prepareView() {
-        current = (Store) getItems().getRowData();
+        current = (Mall) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "View";
     }
 
     public String prepareCreate() {
-        current = new Store();
+        current = new Mall();
         selectedItemIndex = -1;
         return "Create";
     }
@@ -82,8 +82,8 @@ public class StoreController implements Serializable {
     public String create() {
         try {
             getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("StoreCreated"));
-            return prepareCreate();
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("MallCreated"));
+            return prepareView();
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             return null;
@@ -91,7 +91,7 @@ public class StoreController implements Serializable {
     }
 
     public String prepareEdit() {
-        current = (Store) getItems().getRowData();
+        current = (Mall) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "Edit";
     }
@@ -99,7 +99,7 @@ public class StoreController implements Serializable {
     public String update() {
         try {
             getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("StoreUpdated"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("MallUpdated"));
             return "View";
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -108,7 +108,7 @@ public class StoreController implements Serializable {
     }
 
     public String destroy() {
-        current = (Store) getItems().getRowData();
+        current = (Mall) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         performDestroy();
         recreatePagination();
@@ -132,7 +132,7 @@ public class StoreController implements Serializable {
     private void performDestroy() {
         try {
             getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("StoreDeleted"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("MallDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
         }
@@ -188,21 +188,21 @@ public class StoreController implements Serializable {
         return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
     }
 
-    public Store getStore(java.lang.Long id) {
+    public Mall getMall(java.lang.Long id) {
         return ejbFacade.find(id);
     }
 
-    @FacesConverter(forClass = Store.class)
-    public static class StoreControllerConverter implements Converter {
+    @FacesConverter(forClass = Mall.class)
+    public static class MallControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            StoreController controller = (StoreController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "storeController");
-            return controller.getStore(getKey(value));
+            MallController controller = (MallController) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "mallController");
+            return controller.getMall(getKey(value));
         }
 
         java.lang.Long getKey(String value) {
@@ -222,11 +222,11 @@ public class StoreController implements Serializable {
             if (object == null) {
                 return null;
             }
-            if (object instanceof Store) {
-                Store o = (Store) object;
+            if (object instanceof Mall) {
+                Mall o = (Mall) object;
                 return getStringKey(o.getId());
             } else {
-                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + Store.class.getName());
+                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + Mall.class.getName());
             }
         }
 

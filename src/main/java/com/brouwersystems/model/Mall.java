@@ -4,9 +4,10 @@
  * and open the template in the editor.
  */
 
-package com.softwaremotif.model;
+package com.brouwersystems.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.faces.model.SelectItem;
 import javax.persistence.CascadeType;
@@ -45,7 +46,7 @@ public class Mall implements Serializable, Selectable {
     @Column(name = "NAME")
     private String name;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mall", orphanRemoval = true)
-    private Collection<Store> stores;
+    private Collection<Store> stores = new ArrayList<>();
 
     public Mall() {
     }

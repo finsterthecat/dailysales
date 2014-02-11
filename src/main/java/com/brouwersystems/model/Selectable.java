@@ -1,5 +1,5 @@
 
-package com.softwaremotif.model;
+package com.brouwersystems.model;
 
 import javax.faces.model.SelectItem;
 import javax.persistence.Transient;

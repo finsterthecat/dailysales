@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 
-package com.softwaremotif.control;
+package com.brouwersystems.control;
 
-import com.softwaremotif.model.Mall;
-import com.softwaremotif.model.Store;
+import com.brouwersystems.model.Mall;
+import com.brouwersystems.model.Store;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;

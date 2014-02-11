@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 
-package com.softwaremotif.control;
+package com.brouwersystems.control;
 
-import com.softwaremotif.model.Mall;
-import com.softwaremotif.model.Store;
+import com.brouwersystems.model.Mall;
+import com.brouwersystems.model.Store;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @Named
 public class StoreFacade extends AbstractFacade<Store> {
-    @PersistenceContext(unitName = "com.brouwer_datascape_war_1.0-SNAPSHOTPU")
+    @PersistenceContext
     private EntityManager em;
     
     private static final Logger LOG = LoggerFactory.getLogger(StoreFacade.class);
@@ -53,16 +53,19 @@ public class StoreFacade extends AbstractFacade<Store> {
     }
 
     public void addStore(Mall mall, Store store) {
-        mall.addStore(store);
+        Mall dbMall = em.find(Mall.class, mall.getId());
+        dbMall.addStore(store);
         this.create(store);
-        mallFacade.edit(mall);
+        //em.refresh(mall);
+        //mallFacade.edit(mall);
         LOG.debug("added " + store.getName());
     }
     
     public void removeStore(Store store) {
         LOG.debug("remove " + store.getName() + " from " + store.getMall().getName());
         store.getMall().getStores().remove(store);
-        mallFacade.edit(store.getMall());
+        //em.refresh(store.getMall());
+        //mallFacade.edit(store.getMall());
         this.remove(store);
         LOG.debug("deleted " + store.getName());
     }

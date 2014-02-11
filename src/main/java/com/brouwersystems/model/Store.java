@@ -4,9 +4,10 @@
  * and open the template in the editor.
  */
 
-package com.softwaremotif.model;
+package com.brouwersystems.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.faces.model.SelectItem;
 import javax.persistence.Access;
@@ -63,7 +64,7 @@ public class Store implements Serializable, Selectable {
     
     @BatchFetch(BatchFetchType.JOIN)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "store", orphanRemoval = true)
-    private Collection<MonthlySales> monthlySales;
+    private Collection<MonthlySales> monthlySales = new ArrayList<>();
     
     @JoinColumn(name = "MALL_ID", referencedColumnName = "ID")
     @ManyToOne(optional = false)

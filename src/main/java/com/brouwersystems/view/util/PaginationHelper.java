@@ -1,4 +1,4 @@
-package com.softwaremotif.view.util;
+package com.brouwersystems.view.util;
 
 import javax.faces.model.DataModel;
 

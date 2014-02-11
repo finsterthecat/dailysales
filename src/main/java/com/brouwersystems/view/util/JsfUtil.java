@@ -1,6 +1,6 @@
-package com.softwaremotif.view.util;
+package com.brouwersystems.view.util;
 
-import com.softwaremotif.model.Selectable;
+import com.brouwersystems.model.Selectable;
 import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;

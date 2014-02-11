@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package com.softwaremotif.model;
+package com.brouwersystems.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

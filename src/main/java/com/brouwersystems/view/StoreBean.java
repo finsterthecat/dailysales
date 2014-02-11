@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 
-package com.softwaremotif.view;
+package com.brouwersystems.view;
 
-import com.softwaremotif.control.StoreFacade;
-import com.softwaremotif.model.Store;
+import com.brouwersystems.control.StoreFacade;
+import com.brouwersystems.model.Store;
 import java.io.Serializable;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
