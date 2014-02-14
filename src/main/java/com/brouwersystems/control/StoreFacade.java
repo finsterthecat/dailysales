@@ -10,7 +10,6 @@ import com.brouwersystems.model.Mall;
 import com.brouwersystems.model.Store;
 import java.util.List;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,12 +25,9 @@ import org.slf4j.LoggerFactory;
 @Named
 public class StoreFacade extends AbstractFacade<Store> {
     @PersistenceContext
-    private EntityManager em;
+    EntityManager em;
     
     private static final Logger LOG = LoggerFactory.getLogger(StoreFacade.class);
-    
-    @Inject
-    MallFacade mallFacade;
     
     @Override
     protected EntityManager getEntityManager() {
@@ -53,21 +49,19 @@ public class StoreFacade extends AbstractFacade<Store> {
     }
 
     public void addStore(Mall mall, Store store) {
-        Mall dbMall = em.find(Mall.class, mall.getId());
-        dbMall.addStore(store);
-        this.create(store);
-        //em.refresh(mall);
-        //mallFacade.edit(mall);
-        LOG.debug("added " + store.getName());
+        LOG.debug("addStore");
+        mall.addStore(store);
+        this.create(store);     //Needed to generate pk
+        em.merge(mall);
+        LOG.trace("added " + store.getName() + " to mall " + mall.getName());
     }
     
     public void removeStore(Store store) {
-        LOG.debug("remove " + store.getName() + " from " + store.getMall().getName());
-        store.getMall().getStores().remove(store);
-        //em.refresh(store.getMall());
-        //mallFacade.edit(store.getMall());
-        this.remove(store);
-        LOG.debug("deleted " + store.getName());
+        LOG.debug("removeStore");
+        Mall mall = store.getMall();
+        mall.removeStore(store);
+        em.merge(mall);
+        LOG.trace("removed " + store.getName() + " from " + mall.getName());
     }
 
 }

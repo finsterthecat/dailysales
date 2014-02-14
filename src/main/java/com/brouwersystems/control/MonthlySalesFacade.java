@@ -10,7 +10,6 @@ import com.brouwersystems.model.MonthlySales;
 import com.brouwersystems.model.Store;
 import java.util.List;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -27,9 +26,6 @@ public class MonthlySalesFacade extends AbstractFacade<MonthlySales> {
     private EntityManager em;
 
     private static final Logger LOG = LoggerFactory.getLogger(MonthlySalesFacade.class);
-    
-    @Inject
-    StoreFacade storeFacade;
     
     @Override
     protected EntityManager getEntityManager() {
@@ -53,14 +49,14 @@ public class MonthlySalesFacade extends AbstractFacade<MonthlySales> {
     public void addSale(Store store, MonthlySales monthlySales) {
         store.addMonthlySale(monthlySales);
         this.create(monthlySales);
-        storeFacade.edit(store);
+        em.merge(store);
         LOG.debug("Added sale to " + store.getName());
     }
     
     public void removeSale(MonthlySales monthlySales) {
-        monthlySales.getStore().getMonthlySales().remove(monthlySales);
-        storeFacade.edit(monthlySales.getStore());
-        this.remove(monthlySales);
+        Store store = monthlySales.getStore();
+        store.getMonthlySales().remove(monthlySales);
+        em.merge(store);
         LOG.debug("Removed sale from " + monthlySales.getStore().getName());
     }
 }

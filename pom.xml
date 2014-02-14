@@ -15,7 +15,7 @@
         <slf4j.version>1.6.4</slf4j.version>
         <logback.version>1.0.1</logback.version>
         <glassfish.home>/Applications/NetBeans/glassfish-4.0/glassfish</glassfish.home>
-        <skipTests>true</skipTests>
+        <skipTests>false</skipTests>
     </properties>
    
     <dependencies>
@@ -83,6 +83,11 @@
             <version>4.10</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.3</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -136,10 +141,9 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>integration-test</id>
-                        <phase>integration-test</phase>
                         <goals>
                             <goal>integration-test</goal>
+                            <goal>verify</goal>
                         </goals>
                     </execution>
                 </executions> 
@@ -190,6 +194,40 @@
                         </goals>
                     </execution>
                     <execution>
+                        <id>pre-test</id>
+                        <phase>test-compile</phase>
+                        <configuration>
+                            <tasks>
+                                <!--replace the "proper" persistence.xml with the "test" version-->
+                                <copy file="${project.build.testOutputDirectory}/META-INF/persistence_local.xml"
+                                      tofile="${project.build.outputDirectory}/META-INF/persistence.xml"
+                                      overwrite="true"/>
+                                <copy todir="/tmp/dailysalesdb">
+                                    <fileset dir="${project.build.outputDirectory}/META-INF/database" includes="*" />
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>post-test</id>
+                        <phase>test</phase>
+                        <configuration>
+                            <tasks>
+                                <!--restore the "proper" persistence.xml-->
+                                <copy file="${project.build.outputDirectory}/META-INF/persistence.xml.proper"
+                                      tofile="${project.build.outputDirectory}/META-INF/persistence.xml"
+                                      overwrite="true"/>
+                                <delete dir="/tmp/dailysalesdb" failonerror="false" />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
                         <id>pre-IT</id>
                         <phase>pre-integration-test</phase>
                         <configuration>
@@ -228,6 +266,16 @@
         </plugins>
     </build>
     
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.16</version>
+            </plugin>
+        </plugins>
+    </reporting>
+
     <pluginRepositories>
         <pluginRepository>
             <id>maven2-repository.dev.java.net</id>

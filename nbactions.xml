@@ -11,7 +11,30 @@
             <actionName>CUSTOM-integration test</actionName>
             <displayName>integration test</displayName>
             <goals>
-                <goal>integration-test</goal>
+                <goal>verify</goal>
+            </goals>
+            <properties>
+                <skipTests>false</skipTests>
+                <maven.surefire.debug></maven.surefire.debug>
+            </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-debug int test</actionName>
+            <displayName>debug int test</displayName>
+            <goals>
+                <goal>-Dmaven.failsafe.debug</goal>
+                <goal>verify</goal>
+            </goals>
+            <properties>
+                <skipTests>false</skipTests>
+            </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-debug test</actionName>
+            <displayName>debug test</displayName>
+            <goals>
+                <goal>-Dmaven.failsafe.debug</goal>
+                <goal>test</goal>
             </goals>
             <properties>
                 <skipTests>false</skipTests>

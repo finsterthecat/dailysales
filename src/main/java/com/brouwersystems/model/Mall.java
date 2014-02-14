@@ -34,7 +34,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Mall.findAll", query = "SELECT m FROM Mall m"),
-    @NamedQuery(name = "Mall.findById", query = "SELECT m FROM Mall m WHERE m.id = :id"),
+    @NamedQuery(name = "Mall.findById",
+            query = "SELECT m FROM Mall m join fetch m.stores WHERE m.id = :id"),
     @NamedQuery(name = "Mall.findByName", query = "SELECT m FROM Mall m WHERE m.name = :name")})
 public class Mall implements Serializable, Selectable {
     private static final long serialVersionUID = 1L;
@@ -111,8 +112,12 @@ public class Mall implements Serializable, Selectable {
     }
     
     public void addStore(Store store) {
-        this.getStores().add(store);
+        getStores().add(store);
         store.setMall(this);
+    }
+    
+    public void removeStore(Store store) {
+        getStores().remove(store);
     }
     
 }

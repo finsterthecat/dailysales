@@ -6,7 +6,7 @@
                                     http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
 >
     <!-- Use embedded derby for integration and unit tests -->
-    <persistence-unit name="com.brouwer_datascape_war_1.0-SNAPSHOTPU" transaction-type="JTA">
+    <persistence-unit name="integration" transaction-type="RESOURCE_LOCAL">
         <class>com.brouwersystems.model.Mall</class>
         <class>com.brouwersystems.model.MonthlySales</class>
         <class>com.brouwersystems.model.Store</class>
