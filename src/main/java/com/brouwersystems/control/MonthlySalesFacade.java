@@ -35,7 +35,6 @@ public class MonthlySalesFacade extends AbstractFacade<MonthlySales> {
     public MonthlySalesFacade() {
         super(MonthlySales.class);
     }
-    
 
     public List<MonthlySales> findByStore(Store store) {
         if (store == null || store.getId() == null) {

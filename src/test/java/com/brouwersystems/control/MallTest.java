@@ -41,7 +41,8 @@ public class MallTest {
     @BeforeClass
     public static void setUpClass() {
         sqlBatchManager = new SqlBatchManager();
-        sqlBatchManager.loadSqlCommands("/tmp/dailysalesdb/data.sql");
+        String ef = System.getProperty("embeddeddb.folder");
+        sqlBatchManager.loadSqlCommands( ef + "/data.sql");
     }
 
     @AfterClass

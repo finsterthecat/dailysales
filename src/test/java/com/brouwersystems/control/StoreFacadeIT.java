@@ -8,16 +8,9 @@ package com.brouwersystems.control;
 import com.brouwersystems.model.Mall;
 import com.brouwersystems.model.Store;
 import com.brouwersystems.testing.SqlBatchManager;
-import com.brouwersystems.testing.TestingUtilities;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.NamingException;
-import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -48,7 +41,8 @@ public class StoreFacadeIT {
         storeFacade = (StoreFacade) container.getContext().lookup("java:global/classes/StoreFacade");
         mallFacade = (MallFacade) container.getContext().lookup("java:global/classes/MallFacade");
         sqlBatchManager = (SqlBatchManager) container.getContext().lookup("java:global/classes/SqlBatchManager");
-        sqlBatchManager.loadSqlCommands("/tmp/dailysalesdb/data.sql");
+        String ef = System.getProperty("embeddeddb.folder");
+        sqlBatchManager.loadSqlCommands(ef + "/data.sql");
         
         System.out.println("Opening the container");
     }

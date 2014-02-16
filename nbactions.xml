@@ -14,7 +14,7 @@
                 <goal>verify</goal>
             </goals>
             <properties>
-                <skipTests>false</skipTests>
+                <skipIntegrationTests>false</skipIntegrationTests>
                 <maven.surefire.debug></maven.surefire.debug>
             </properties>
         </action>
@@ -26,17 +26,18 @@
                 <goal>verify</goal>
             </goals>
             <properties>
-                <skipTests>false</skipTests>
+                <skipIntegrationTests>false</skipIntegrationTests>
             </properties>
         </action>
         <action>
             <actionName>CUSTOM-debug test</actionName>
             <displayName>debug test</displayName>
             <goals>
-                <goal>-Dmaven.failsafe.debug</goal>
+                <goal>-Dmaven.surefire.debug</goal>
                 <goal>test</goal>
             </goals>
             <properties>
+                <skipIntegrationTests>true</skipIntegrationTests>
                 <skipTests>false</skipTests>
             </properties>
         </action>
