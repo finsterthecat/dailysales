@@ -1,0 +1,9 @@
+#surefire
+#Thu Feb 20 15:55:10 EST 2014
+skipIntegrationTests=false
+maven.ext.class.path=/Applications/NetBeans/NetBeans 7.4.app/Contents/Resources/NetBeans/java/maven-nblib/netbeans-eventspy.jar
+maven.surefire.debug=
+user.dir=/Users/tonybrouwer/dev/html5/dailysales
+embeddeddb.folder=/tmp/dailysalesdb
+localRepository=/Users/tonybrouwer/.m2/repository
+basedir=/Users/tonybrouwer/dev/html5/dailysales

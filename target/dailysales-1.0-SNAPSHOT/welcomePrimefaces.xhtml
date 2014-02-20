@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<f:view contentType="text/html">
+    <h:head>
+        <f:facet name="first">
+            <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+            <title>Daily Sales</title>
+        </f:facet>
+    </h:head>
+
+    <h:body>
+
+        <p:layout fullPage="true">
+
+            <p:layoutUnit position="north" size="100" resizable="true" closable="true" collapsible="true">
+                <h1>Daily Sales</h1>
+            </p:layoutUnit>
+
+            <p:layoutUnit position="south" size="100" closable="true" collapsible="true">
+                &copy; Brouwer Systems Inc
+            </p:layoutUnit>
+
+            <p:layoutUnit position="west" size="175" header="Left" collapsible="true">
+                <p:menu>
+                    <p:submenu label="Resources">
+                        <p:menuitem value="Demo" url="http://www.primefaces.org/showcase-labs/ui/home.jsf" />
+                        <p:menuitem value="Documentation" url="http://www.primefaces.org/documentation.html" />
+                        <p:menuitem value="Forum" url="http://forum.primefaces.org/" />
+                        <p:menuitem value="Themes" url="http://www.primefaces.org/themes.html" />
+
+                    </p:submenu>
+
+                </p:menu>
+            </p:layoutUnit>
+
+            <p:layoutUnit position="center">
+                <f:view>
+                    <h:form id="form">  
+                        <p:growl id="growl" showDetail="true"/>  
+
+                        <h1><h:outputText value="Stores"/></h1>
+                        <p:dataTable id="mallTable"
+                                     value="#{mallBean.findAll()}"
+                                     var="item" rowKey="#{item.id}"
+                                     selection="#{mallBean.currentMall}" selectionMode="single"
+                                     rows="5" paginator="true">
+                            <p:ajax event="rowSelect" listener="#{mallBean.onRowSelect}"   
+                                        update=":form:growl :form:outPanel :form:table" oncomplete="outpanel.show()" />  
+                            <p:ajax event="rowUnselect" listener="#{mallBean.onRowUnselect}" update=":form:growl"/>  
+
+                            <f:facet name="header">  
+                                Select a mall to edit 
+                            </f:facet>  
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Name"/>
+                                </f:facet>
+                                <h:outputText value="#{item.name}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Store Count"/>
+                                </f:facet>
+                                <h:outputText value="#{item.storeCollection.size()}"/>
+                            </p:column>
+                        </p:dataTable>
+
+                        <p:dataTable id="table"
+                                     value="#{storeBean.findAll()}"
+                                     var="item" rowKey="#{item.id}"
+                                     selection="#{storeBean.currentStore}" selectionMode="single"
+                                     rows="5" paginator="true">
+                            <p:ajax event="rowSelect" listener="#{storeBean.onRowSelect}"   
+                                        update=":form:growl :form:outPanel" oncomplete="outpanel.show()" />  
+                            <p:ajax event="rowUnselect" listener="#{storeBean.onRowUnselect}" update=":form:growl"/>  
+
+                            <f:facet name="header">  
+                                Select a store to edit 
+                            </f:facet>  
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Name"/>
+                                </f:facet>
+                                <h:outputText value="#{item.name}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Mall"/>
+                                </f:facet>
+                                <h:outputText value="#{item.mall.name}"/>
+                            </p:column>
+                        </p:dataTable>
+
+                        <p:dialog id="dialog" header="Store Detail" widgetVar="storeDialog" resizable="false"  
+                                    showEffect="fade" hideEffect="explode">  
+
+                            <h:panelGrid id="display" columns="2" cellpadding="4">  
+
+                                <f:facet name="header">  
+                                    <h:outputText value="#{storeBean.currentStore.name}" />
+                                </f:facet>  
+
+                                <h:outputText value="Name:" />  
+                                <h:outputText value="#{storeBean.currentStore.name}" />  
+
+                                <h:outputText value="Mall" />  
+                                <h:outputText value="#{storeBean.currentStore.mall.name}" />  
+
+                             </h:panelGrid>  
+                        </p:dialog>  
+                        
+                        <p:panel id="outPanel" widgetVar="outpanel" closable="true" toggleable="true" visible="false">
+                            <h2><h:outputText value="Edit #{storeBean.currentStore.name}"/></h2>
+                            <p:panelGrid id="editdiv" columns="2">
+                                <p:outputLabel value="Name:" for="name" />
+                                <p:inputText id="name" value="#{storeBean.currentStore.name}" title="Name" required="true" requiredMessage="The Name field is required."/>
+                                <p:outputLabel value="Mall:" for="mall" />
+                                <h:selectOneMenu id="mall" value="#{storeBean.currentStore.mall}" title="#{bundle.EditStoreTitle_mall}" required="true" requiredMessage="#{bundle.EditStoreRequiredMessage_mall}">
+                                    <f:selectItems value="#{mallController.itemsAvailableSelectOne}" />
+                                </h:selectOneMenu>
+                            </p:panelGrid>
+                            <p:commandButton value="Save" update="outPanel table growl" id="ajaxSave"  
+                                             actionListener="#{storeBean.updateStore(storeBean.currentStore)}" styleClass="ui-priority-primary"/>  
+                            <p:commandButton value="New" update="outPanel table growl" id="ajaxNew"  
+                                             actionListener="#{storeBean.createStore(storeBean.currentStore)}" styleClass="ui-priority-primary"/>  
+                            <p:commandButton value="Remove" update="outPanel table growl" id="ajaxRemove"  
+                                             actionListener="#{storeBean.removeStore(storeBean.currentStore)}" styleClass="ui-priority-primary"/>  
+
+                        </p:panel>
+      
+                    </h:form>
+                </f:view>
+
+            </p:layoutUnit>
+
+        </p:layout>
+
+    </h:body>
+
+</f:view>
+
+</html>
+

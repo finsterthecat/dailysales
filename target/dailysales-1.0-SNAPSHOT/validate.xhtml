@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+  <title>Email Validator Test</title>
+</h:head>
+<h:body>
+   <h:form>
+        <h1>Validator Test</h1>
+  
+             <f:view>
+                 <h:form>
+                 <h1><h:outputText value="Create/Edit"/></h1>
+                 <p:panelGrid columns="2">
+                     <p:outputLabel value="Name:" for="name" />
+                     <p:inputText id="name" value="#{mallBean.currentMall.name}" title="Name" required="true"/>
+                 </p:panelGrid>
+                </h:form>
+             </f:view>
+
+        <br/>
+        <h:commandButton action="#{mallBean.createMall(mallBean.currentMall)}" value="Proceed"/><br/>
+        <h:messages style="color: red"/>
+    </h:form>
+</h:body>
+</html>
