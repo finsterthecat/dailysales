@@ -41,4 +41,15 @@
                 <skipTests>false</skipTests>
             </properties>
         </action>
+        <action>
+            <actionName>CUSTOM-install -noTests</actionName>
+            <displayName>install -noTests</displayName>
+            <goals>
+                <goal>install</goal>
+            </goals>
+            <properties>
+                <skipTests>true</skipTests>
+                <skipIntegrationTests>true</skipIntegrationTests>
+            </properties>
+        </action>
     </actions>

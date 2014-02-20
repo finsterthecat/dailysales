@@ -8,41 +8,40 @@ package com.brouwersystems.control;
 import com.brouwersystems.model.Mall;
 import com.brouwersystems.model.Store;
 import com.brouwersystems.testing.SqlBatchManager;
-import com.brouwersystems.testing.TestingUtilities;
+import com.brouwersystems.testing.TestingUtil;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Ignore;
 
 /**
- *
- * @author tonybrouwer
+ * Unit tests for mall.
  */
 public class MallTest {
 
     private EntityTransaction transaction;
     private MallFacade mallFacade;
     private StoreFacade storeFacade;
-    TestingUtilities testingUtilities;
+    TestingUtil testingUtilities;
     private EntityManager em;
-
-    private static SqlBatchManager sqlBatchManager = null;
+    private static List<String> sqlCommands;
 
     public MallTest() {
     }
 
     @BeforeClass
     public static void setUpClass() {
-        sqlBatchManager = new SqlBatchManager();
         String ef = System.getProperty("embeddeddb.folder");
-        sqlBatchManager.loadSqlCommands( ef + "/data.sql");
+        sqlCommands = SqlBatchManager.loadSqlCommands( ef + "/data.sql");
     }
 
     @AfterClass
@@ -60,10 +59,9 @@ public class MallTest {
         storeFacade.em = em;
         transaction = em.getTransaction();
         transaction.begin();
-        testingUtilities = new TestingUtilities();
+        testingUtilities = new TestingUtil();
         testingUtilities.em = em;
-        sqlBatchManager.testingUtilities = testingUtilities;
-        sqlBatchManager.executeSqlCommands();
+        testingUtilities.runSqlCommands(sqlCommands);
         transaction.commit();
     }
 
@@ -81,7 +79,6 @@ public class MallTest {
         List<Mall> malls = mallFacade.findAll();
         transaction.commit();
         assertEquals(4, malls.size());
-
     }
 
     /**

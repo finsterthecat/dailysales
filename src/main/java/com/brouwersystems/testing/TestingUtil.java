@@ -8,14 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Stateless
-public class TestingUtilities {
+public class TestingUtil {
 
     @PersistenceContext
     public EntityManager em;
     
-    private static final Logger LOG = LoggerFactory.getLogger(TestingUtilities.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestingUtil.class);
     
-    public TestingUtilities() {
+    public TestingUtil() {
     }
     
     /**
